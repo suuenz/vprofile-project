@@ -1,4 +1,4 @@
-name: Build and deploy WAR app to Azure Web App - webappprofile2025
+name: Build and deploy WAR app to Azure Web App - webappprofile
 
 on:
   push:
