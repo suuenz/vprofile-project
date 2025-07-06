@@ -1,4 +1,4 @@
-name: Build and deploy WAR app to Azure Web App - webappprofile
+name: Build and deploy WAR app to Azure Web App - webappprofile01
 
 on:
   push:
@@ -56,6 +56,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'webappprofile2025'
+          app-name: 'webappprofile01'
           slot-name: 'Production'
           package: 'ROOT.war'
