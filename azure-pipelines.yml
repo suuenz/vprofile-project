@@ -14,25 +14,26 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - task: Docker@2
-    displayName: 'Login to ACR'
-    inputs:
-      command: 'login'
-      containerRegistry: 'acr-devreg96-service'
+    - task: Docker@2
+      displayName: 'Login to ACR'
+      inputs:
+        command: 'login'
+        containerRegistry: 'acr-devreg96-service'
 
-  - script: |
-      sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-      sudo chmod +x /usr/local/bin/docker-compose
-      echo 'Docker Compose version:'
-      /usr/local/bin/docker-compose --version
-    displayName: 'Install Docker Compose'
+    - script: |
+        echo Installing docker-compose...
+        DOCKER_COMPOSE_VERSION="1.29.2"
+        sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        echo 'Docker Compose version:'
+        /usr/local/bin/docker-compose --version
+      displayName: 'Install Docker Compose'
 
-
-  - script: |
-      echo Tagging and pushing images to ACR...
-      docker tag vprofileapp $ACR_NAME.azurecr.io/$REPO_APP:$IMAGE_TAG
-      docker push $ACR_NAME.azurecr.io/$REPO_APP:$IMAGE_TAG
-    displayName: 'Push image'
+    - script: |
+        echo Tagging and pushing images to ACR...
+        docker tag vprofileapp $(ACR_NAME).azurecr.io/$(REPO_APP):$(IMAGE_TAG)
+        docker push $(ACR_NAME).azurecr.io/$(REPO_APP):$(IMAGE_TAG)
+      displayName: 'Push image'
 
 - job: deploy
   displayName: 'Deploy to App Service'
@@ -40,9 +41,9 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - task: AzureWebAppContainer@1
-    displayName: 'Deploy Docker Image'
-    inputs:
-      azureSubscription: Azure subscription 1 (2edd3441-9535-4384-9f66-2e3fad269e4c)
-      appName: 'webdockerapp'
-      containers: 'devreg96.azurecr.io/vprofileapp:latest'
+    - task: AzureWebAppContainer@1
+      displayName: 'Deploy Docker Image'
+      inputs:
+        azureSubscription: 'Azure subscription 1 (2edd3441-9535-4384-9f66-2e3fad269e4c)'
+        appName: 'webdockerapp'
+        containers: 'devreg96.azurecr.io/vprofileapp:latest'
