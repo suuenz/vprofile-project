@@ -1,50 +1,47 @@
 trigger:
 - main
 
-pool:
-  vmImage: 'ubuntu-latest'
-
 variables:
-  ACR_NAME: 'devreg96'  # فقط نام، نه آدرس کامل
+  ACR_NAME: 'devreg96'
   IMAGE_TAG: 'latest'
   REPO_APP: 'vprofileapp'
   REPO_WEB: 'vprofileweb'
   REPO_DB: 'vprofiledb'
 
-steps:
+jobs:
+- job: build
+  displayName: 'Build and Push Docker Images'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: Docker@2
+    displayName: 'Login to ACR'
+    inputs:
+      command: 'login'
+      containerRegistry: 'acr-devreg96-service'
 
-# نصب docker-compose (در azure agent معمولاً نصبه ولی برای اطمینان)
-- script: |
-    echo Installing docker-compose...
-    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-    sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-  displayName: 'Install Docker Compose'
+  - script: |
+      echo Validating docker-compose config...
+      docker-compose config
+      echo Building...
+      docker-compose build
+    displayName: 'Build docker images'
 
-# لاگین به Azure Container Registry
-- task: Docker@2
-  displayName: 'Login to Azure Container Registry'
-  inputs:
-    command: 'login'
-    containerRegistry: 'acr-devreg96-service'  # باید قبلاً تعریف شده باشد در Azure DevOps
+  - script: |
+      echo Tagging and pushing images to ACR...
+      docker tag vprofileapp $ACR_NAME.azurecr.io/$REPO_APP:$IMAGE_TAG
+      docker push $ACR_NAME.azurecr.io/$REPO_APP:$IMAGE_TAG
+    displayName: 'Push image'
 
-# بیلد سرویس‌ها با docker-compose
-- script: |
-    echo Validating docker-compose config...
-    docker-compose config
-    echo Building docker images...
-    docker-compose build
-  displayName: 'Build images using docker-compose'
-
-# Push کردن ایمیج‌ها به ACR
-- script: |
-    echo Tagging and pushing images to ACR...
-
-    docker tag vprofileapp $ACR_NAME.azurecr.io/$REPO_APP:$IMAGE_TAG
-    docker tag vprofileweb $ACR_NAME.azurecr.io/$REPO_WEB:$IMAGE_TAG
-    docker tag vprofiledb $ACR_NAME.azurecr.io/$REPO_DB:$IMAGE_TAG
-
-    docker push $ACR_NAME.azurecr.io/$REPO_APP:$IMAGE_TAG
-    docker push $ACR_NAME.azurecr.io/$REPO_WEB:$IMAGE_TAG
-    docker push $ACR_NAME.azurecr.io/$REPO_DB:$IMAGE_TAG
-  displayName: 'Push images to ACR'
+- job: deploy
+  displayName: 'Deploy to App Service'
+  dependsOn: build
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: AzureWebAppContainer@1
+    displayName: 'Deploy Docker Image'
+    inputs:
+      azureSubscription: Azure subscription 1 (2edd3441-9535-4384-9f66-2e3fad269e4c)
+      appName: 'webdockerapp'
+      containers: 'devreg96.azurecr.io/vprofileapp:latest'
