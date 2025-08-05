@@ -27,14 +27,11 @@ steps:
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'bash'
     args:
-      - '-c'
-      - |
       - push
-      - 'gcr.io/${PROJECT_ID}/${_REPO}/vprofileapp:${_VERSION}'
-      - 'gcr.io/{$PROJECT_ID}/${_REPO}/vprofileweb:${_VERSION}'
-      - 'gcr.io/{$PROJECT_ID}/${_REPO}/vprofiledb:${_VERSION}'
+      - 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofileapp:${_VERSION}'
+      - 'gcr.io/{$_PROJECT_ID}/${_REPO}/vprofileweb:${_VERSION}'
+      - 'gcr.io/{$_PROJECT_ID}/${_REPO}/vprofiledb:${_VERSION}'
 
 substitutions:
   _PROJECT_ID: 'eighth-vehicle-466618-g2'
