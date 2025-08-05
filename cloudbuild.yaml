@@ -23,6 +23,8 @@ steps:
     args:
       - '-c'
       - |
+        pwd
+        ls
         docker-compose -f docker-compose.yaml build
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
