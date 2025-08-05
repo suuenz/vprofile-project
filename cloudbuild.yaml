@@ -24,6 +24,13 @@ steps:
       - '-c'
       - |
         docker-compose -f docker-compose.yml build
+      - build
+      - '-t'
+      - 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofileapp:1.0'
+      - 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofileweb:1.0'
+      - 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofiledb:1.0'
+      - '.'
+      
 
   # 4. Push Docker images to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
