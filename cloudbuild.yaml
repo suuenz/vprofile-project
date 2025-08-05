@@ -25,7 +25,7 @@ steps:
       - |
         pwd
         ls
-        docker-compose -f docker-compose.yaml build
+        docker-compose -f docker-compose.yml build
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
