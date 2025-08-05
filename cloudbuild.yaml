@@ -34,14 +34,14 @@ steps:
       - '-c'
       - |
       - push
-      - gcr.io/$PROJECT_ID/${_REPO}/vprofileapp:$IMAGE_TAG
-      - gcr.io/$PROJECT_ID/${_REPO}/vprofileweb:$IMAGE_TAG
-      - gcr.io/$PROJECT_ID/${_REPO}/vprofiledb:$IMAGE_TAG
+      - 'gcr.io/${PROJECT_ID}/${_REPO}/vprofileapp:${_VERSION}'
+      - 'gcr.io/{$PROJECT_ID}/${_REPO}/vprofileweb:${_VERSION}'
+      - 'gcr.io/{$PROJECT_ID}/${_REPO}/vprofiledb:${_VERSION}'
 
 substitutions:
   _PROJECT_ID: 'eighth-vehicle-466618-g2'
   _REPO: 'vprofile-images'
-  _IMAGE_TAG: 'v1.0'
+  _VERSION: 'v1.0'
 
 options:
   logging: CLOUD_LOGGING_ONLY
