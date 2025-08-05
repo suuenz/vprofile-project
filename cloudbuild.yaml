@@ -6,7 +6,6 @@ steps:
       - '-c'
       - |
         git clone https://github.com/suuenz/vprofile-project.git
-        cd vprofile-project
 
   # 2. نصب Docker Compose
   - name: 'gcr.io/cloud-builders/curl'
