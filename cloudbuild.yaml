@@ -24,7 +24,6 @@ steps:
     args:
       - '-c'
       - |
-        cd vprofile-project
         pwd
         docker-compose build .
 
