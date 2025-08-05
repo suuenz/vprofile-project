@@ -24,7 +24,7 @@ steps:
     args:
       - '-c'
       - |
-        cd vprofile
+        cd vprofile-project
         docker-compose build
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
