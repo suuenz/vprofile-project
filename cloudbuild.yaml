@@ -23,8 +23,6 @@ steps:
     args:
       - '-c'
       - |
-        pwd
-        ls vprofile-project
         docker-compose -f docker-compose.yml build
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
