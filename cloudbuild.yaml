@@ -25,7 +25,8 @@ steps:
       - '-c'
       - |
         cd vprofile-project
-        docker-compose build
+        pwd
+        docker-compose build .
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
