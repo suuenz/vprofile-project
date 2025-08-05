@@ -1,0 +1,53 @@
+steps:
+  # 1. کلون ریپو
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        git clone -branch docker https://github.com/suuenz/vprofile-project.git
+        cd vprofile-project
+
+  # 2. نصب Docker Compose
+  - name: 'gcr.io/cloud-builders/curl'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+        docker-compose --version
+
+  # 3. بیلد ایمیج‌ها با Docker Compose
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd vprofile
+        docker-compose build
+
+  # 4. تگ و پوش ایمیج‌ها به Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        REGION=us-central1
+        PROJECT_ID=${_PROJECT_ID}
+        IMAGE_TAG=${_IMAGE_TAG}
+        docker tag vprocontainers/vprofileapp gcr.io/$PROJECT_ID/${_REPO}/vprofileapp:$IMAGE_TAG
+        docker tag vprocontainers/vprofileweb gcr.io/$PROJECT_ID/${_REPO}/vprofileweb:$IMAGE_TAG
+        docker tag vprocontainers/vprofiledb gcr.io/$PROJECT_ID/${_REPO}/vprofiledb:$IMAGE_TAG
+
+        docker push gcr.io/$PROJECT_ID/${_REPO}/vprofileapp:$IMAGE_TAG
+        docker push gcr.io/$PROJECT_ID/${_REPO}/vprofileweb:$IMAGE_TAG
+        docker push gcr.io/$PROJECT_ID/${_REPO}/vprofiledb:$IMAGE_TAG
+
+substitutions:
+  _PROJECT_ID: 'eighth-vehicle-466618-g2'
+  _REPO: 'vprofile-images'
+  _IMAGE_TAG: 'latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
