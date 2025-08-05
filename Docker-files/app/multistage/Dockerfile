@@ -1,7 +1,7 @@
 FROM maven:3.9.9-eclipse-temurin-21-jammy AS BUILD_IMAGE
 
-COPY . /app
 WORKDIR /app
+COPY . /app
 
 RUN mvn install
 FROM tomcat:10-jdk21
