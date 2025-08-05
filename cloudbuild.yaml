@@ -25,6 +25,7 @@ steps:
       - '-c'
       - |
         pwd
+        ls
         docker-compose build .
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
