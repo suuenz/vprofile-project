@@ -23,7 +23,7 @@ steps:
     args:
       - '-c'
       - |
-        docker-compose -f ./docker-compose.yaml build
+        docker-compose -f docker-compose.yaml build
 
   # 4. تگ و پوش ایمیج‌ها به Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
