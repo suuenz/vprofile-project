@@ -33,21 +33,15 @@ steps:
     args:
       - '-c'
       - |
-        REGION=us-central1
-        PROJECT_ID=${_PROJECT_ID}
-        IMAGE_TAG=${_IMAGE_TAG}
-        docker tag vprocontainers/vprofileapp gcr.io/$PROJECT_ID/${_REPO}/vprofileapp:$IMAGE_TAG
-        docker tag vprocontainers/vprofileweb gcr.io/$PROJECT_ID/${_REPO}/vprofileweb:$IMAGE_TAG
-        docker tag vprocontainers/vprofiledb gcr.io/$PROJECT_ID/${_REPO}/vprofiledb:$IMAGE_TAG
-
-        docker push gcr.io/$PROJECT_ID/${_REPO}/vprofileapp:$IMAGE_TAG
-        docker push gcr.io/$PROJECT_ID/${_REPO}/vprofileweb:$IMAGE_TAG
-        docker push gcr.io/$PROJECT_ID/${_REPO}/vprofiledb:$IMAGE_TAG
+      - push
+      - gcr.io/$PROJECT_ID/${_REPO}/vprofileapp:$IMAGE_TAG
+      - gcr.io/$PROJECT_ID/${_REPO}/vprofileweb:$IMAGE_TAG
+      - gcr.io/$PROJECT_ID/${_REPO}/vprofiledb:$IMAGE_TAG
 
 substitutions:
   _PROJECT_ID: 'eighth-vehicle-466618-g2'
   _REPO: 'vprofile-images'
-  _IMAGE_TAG: 'latest'
+  _IMAGE_TAG: 'v1.0'
 
 options:
   logging: CLOUD_LOGGING_ONLY
