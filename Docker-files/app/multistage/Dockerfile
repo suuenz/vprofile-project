@@ -1,8 +1,8 @@
 FROM maven:3.9.9-eclipse-temurin-21-jammy AS BUILD_IMAGE
 
-RUN pwd
-RUN ls home
-RUN mvn clean install
+RUN git clone -b docker https://github.com/suuenz/vprofile-project.git
+RUN cd vprofile-project && git checkout docker && mvn install
+
 FROM tomcat:10-jdk21
 
 RUN rm -rf /usr/local/tomcat/webapps/*
