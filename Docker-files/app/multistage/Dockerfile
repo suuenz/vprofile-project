@@ -1,7 +1,7 @@
 FROM maven:3.9.9-eclipse-temurin-21-jammy AS BUILD_IMAGE
 
 RUN pwd
-RUN ls
+RUN ls home
 RUN mvn clean install
 FROM tomcat:10-jdk21
 
