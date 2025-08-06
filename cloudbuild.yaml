@@ -28,19 +28,19 @@ steps:
 
   # 4. Push Docker images to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofileapp:1.0']
+    args: ['push', 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofileapp:${_VERSION}']
   
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofileweb:1.0']
+    args: ['push', 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofileweb:${_VERSION}']
   
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofiledb:1.0']
+    args: ['push', 'gcr.io/${_PROJECT_ID}/${_REPO}/vprofiledb:${_VERSION}']
 
 
 substitutions:
   _PROJECT_ID: 'eighth-vehicle-466618-g2'
   _REPO: 'vprofile-images'
- # _VERSION: 'v1.0'
+  _VERSION: 'v2.0'
 
 options:
   logging: CLOUD_LOGGING_ONLY
