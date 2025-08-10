@@ -18,7 +18,7 @@ jobs:
       displayName: 'Login to Azure Container Registry'
       inputs:
         command: login
-        containerRegistry: 'acr-devreg96-service'  # نام Service Connection به ACR
+        containerRegistry: 'acr-devreg96-service-1'  # نام Service Connection به ACR
 
     - script: |
         echo Installing Docker Compose...
