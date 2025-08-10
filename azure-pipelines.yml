@@ -35,9 +35,9 @@ jobs:
 
     - script: |
         echo Tagging and pushing images to ACR...
-        docker tag vprocontainers/vprofileapp $(ACR_NAME).azurecr.io/$(REPO_APP):$(IMAGE_TAG)
-        docker tag vprocontainers/vprofileweb $(ACR_NAME).azurecr.io/$(REPO_WEB):$(IMAGE_TAG)
-        docker tag vprocontainers/vprofiledb $(ACR_NAME).azurecr.io/$(REPO_DB):$(IMAGE_TAG)
+        docker tag vprofileapp $(ACR_NAME).azurecr.io/$(REPO_APP):$(IMAGE_TAG)
+        docker tag vprofileweb $(ACR_NAME).azurecr.io/$(REPO_WEB):$(IMAGE_TAG)
+        docker tag vprofiledb $(ACR_NAME).azurecr.io/$(REPO_DB):$(IMAGE_TAG)
 
         docker push $(ACR_NAME).azurecr.io/$(REPO_APP):$(IMAGE_TAG)
         docker push $(ACR_NAME).azurecr.io/$(REPO_WEB):$(IMAGE_TAG)
