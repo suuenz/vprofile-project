@@ -4,7 +4,7 @@ services:
   vprodb:
     build: 
       context: ./Docker-files/db
-    image: devreg96.azurecr.io/vprofiledb:v2.0
+    image: devreg96.azurecr.io/vprofiledb:latest
     container_name: vprodb
     ports:
       - "3306:3306"
@@ -29,7 +29,7 @@ services:
   vproapp:
     build: 
       context: ./Docker-files/app/multistage
-    image: devreg96.azurecr.io/vprofileapp:v2.0
+    image: devreg96.azurecr.io/vprofileapp:latest
     container_name: vproapp
     ports:
       - "8080:8080"
@@ -39,7 +39,7 @@ services:
   vproweb:
     build: 
       context: ./Docker-files/web
-    image: devreg96.azurecr.io/vprofileweb:v2.0
+    image: devreg96.azurecr.io/vprofileweb:latest
     container_name: vproweb
     ports:
       - "80:80"
