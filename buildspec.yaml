@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing docker-compose...
+      - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      - chmod +x /usr/local/bin/docker-compose
+      - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 084317777937.dkr.ecr.eu-north-1.amazonaws.com
+      - REPO_URI_APP=084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp
+      - REPO_URI_WEB=084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileweb
+      - REPO_URI_DB=084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofiledb
+      - IMAGE_TAG=latest
+  build:
+    commands:
+      - echo Validating docker-compose config...
+      - docker-compose config
+      - echo Building services with docker-compose...
+      - docker-compose build
+      - echo Listing built images...
+      - docker images
+  post_build:
+    commands:
+      - echo Pushing image to ECR...
+      - docker push $REPO_URI_APP:$IMAGE_TAG
+      - docker push $REPO_URI_WEB:$IMAGE_TAG
+      - docker push $REPO_URI_DB:$IMAGE_TAG
