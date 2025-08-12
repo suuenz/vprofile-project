@@ -4,7 +4,7 @@ services:
   vprodb:
     build: 
       context: ./Docker-files/db
-    image: gcr.io/eighth-vehicle-466618-g2/vprofile-images/vprofiledb:v1.0
+    image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofiledb:latest
     container_name: vprodb
     ports:
       - "3306:3306"
@@ -29,7 +29,7 @@ services:
   vproapp:
     build: 
       context: ./Docker-files/app/multistage
-    image: gcr.io/eighth-vehicle-466618-g2/vprofile-images/vprofileapp:v1.0
+    image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:latest
     container_name: vproapp
     ports:
       - "8080:8080"
@@ -39,7 +39,7 @@ services:
   vproweb:
     build: 
       context: ./Docker-files/web
-    image: gcr.io/eighth-vehicle-466618-g2/vprofile-images/vprofileweb:v1.0
+    image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileweb:latest
     container_name: vproweb
     ports:
       - "80:80"
