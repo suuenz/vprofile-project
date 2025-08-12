@@ -23,6 +23,7 @@ phases:
       - docker-compose build
       - echo Listing built images...
       - docker images
+      - kubectl apply -f k8s-deploy.yaml --validate=false
   post_build:
     commands:
       - echo Pushing image to ECR...
