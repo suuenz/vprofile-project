@@ -1,0 +1,39 @@
+
+surena .z <surena.zilabi@gmail.com>
+6:35 PM (1 minute ago)
+to me
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprofileapp
+  labels:
+    app: vprofileapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vprofileapp
+  template:
+    metadata:
+      labels:
+        app: vprofileapp
+    spec:
+      containers:
+        - name: vprofileapp
+          image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vprofileapp-svc
+spec:
+  selector:
+    app: vprofileapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
