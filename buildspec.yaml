@@ -1,58 +1,31 @@
 version: 0.2
 
-env:
-  variables:
-    AWS_DEFAULT_REGION: eu-north-1
-    ACCOUNT_ID: "084317777937"
-    CLUSTER_NAME: "my-eks-cluster"
-    REPO_URI_APP: "084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp"
-    REPO_URI_WEB: "084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileweb"
-    REPO_URI_DB: "084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofiledb"
-  # بهتر است تگ را به SHA کمیت ست کنید تا دیپلوی قابل تکرار باشد
-  parameter-store:
-    # اختیاری؛ اگر چیزی در پارام‌استور داری می‌توانی اینجا مپ کنی
-    # EXAMPLE_SECRET: "/myapp/secret"
 phases:
   install:
     commands:
-      - echo "Installing docker-compose..."
+      - echo Installing docker-compose...
       - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-      - chmod +x /usr/local/bin/docker-compose && ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
-      - echo "Installing kubectl..."
-      - curl -sSL -o /usr/local/bin/kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.0/2024-04-19/bin/linux/amd64/kubectl
-      - chmod +x /usr/local/bin/kubectl
-      - kubectl version --client
+      - chmod +x /usr/local/bin/docker-compose
+      - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
   pre_build:
     commands:
-      - echo "Logging in to Amazon ECR..."
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-      # تعیین تگ: SHA کمیت یا تاریخ
-      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}
-      - echo "IMAGE_TAG set to $IMAGE_TAG"
-      # فقط جهت دیباگ: مطمئن شو بیلد با همین رول اجرا می‌شود
-      - aws sts get-caller-identity
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 084317777937.dkr.ecr.eu-north-1.amazonaws.com
+      - REPO_URI_APP=084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp
+      - REPO_URI_WEB=084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileweb
+      - REPO_URI_DB=084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofiledb
+      - IMAGE_TAG=latest
   build:
     commands:
-      - echo "Validating docker-compose config..."
+      - echo Validating docker-compose config...
       - docker-compose config
-      - echo "Building services with docker-compose..."
+      - echo Building services with docker-compose...
       - docker-compose build
-      - echo "Listing built images..."
+      - echo Listing built images...
       - docker images
-      - echo "Pushing images to ECR..."
-      - docker tag vprofileapp:latest $REPO_URI_APP:$IMAGE_TAG || true
-      - docker tag vprofileweb:latest $REPO_URI_WEB:$IMAGE_TAG || true
-      - docker tag vprofiledb:latest $REPO_URI_DB:$IMAGE_TAG || true
-      - docker push $REPO_URI_APP:$IMAGE_TAG || true
-      - docker push $REPO_URI_WEB:$IMAGE_TAG || true
-      - docker push $REPO_URI_DB:$IMAGE_TAG || true
   post_build:
     commands:
-      - echo "Updating kubeconfig for EKS cluster..."
-      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $CLUSTER_NAME
-      - echo "K8s whoami (quick permission check)..."
-      - kubectl auth can-i get pods -A || true
-      - echo "Applying Kubernetes manifests (skip OpenAPI validation)..."
-      - kubectl apply -f k8s-deploy.yaml --validate=false
-      - echo "Deployment status:"
-      - kubectl rollout status deploy/vprofileapp -n vprofile --timeout=120s || true
+      - echo Pushing image to ECR...
+      - docker push $REPO_URI_APP:$IMAGE_TAG
+      - docker push $REPO_URI_WEB:$IMAGE_TAG
+      - docker push $REPO_URI_DB:$IMAGE_TAG
