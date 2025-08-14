@@ -6,11 +6,11 @@ metadata:
     app: vprofileapp
 spec:
   replicas: 2
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 600
   selector:
     matchLabels:
       app: vprofileapp
-  strategy:
-    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -23,32 +23,52 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          # اگر برنامه‌ات بدون وابستگی‌ها (DB/Rabbit/Memcached) هم بالا می‌آید، همین کافیست.
+          # در غیر اینصورت متغیرهای محیطی را باز کن و مقادیر مناسب بده.
+          # env:
+          #   - name: DB_HOST
+          #     value: mysql
+          #   - name: DB_USER
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: mysql-secret
+          #         key: username
+          #   - name: DB_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: mysql-secret
+          #         key: password
           readinessProbe:
             httpGet:
               path: /
-              port: http
-            initialDelaySeconds: 5
+              port: 8080
+            initialDelaySeconds: 15
             periodSeconds: 5
             timeoutSeconds: 2
             failureThreshold: 6
           livenessProbe:
             httpGet:
               path: /
-              port: http
-            initialDelaySeconds: 15
+              port: 8080
+            initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 2
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: "100m"
+              memory: "128Mi"
             limits:
-              cpu: 500m
-              memory: 512Mi
+              cpu: "500m"
+              memory: "512Mi"
+      # اگر نودها دسترسی IAM/ECR دارند، نیاز به imagePullSecrets نیست.
+      # در غیر اینصورت یک secret از نوع docker-registry بساز و اینجا اضافه کن:
+      # imagePullSecrets:
+      #   - name: ecr-pull-secret
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: vprofileapp-svc
+  name: vprofileapp
   labels:
     app: vprofileapp
 spec:
@@ -58,4 +78,4 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: http
+      targetPort: 8080
