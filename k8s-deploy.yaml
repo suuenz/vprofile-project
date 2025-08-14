@@ -23,21 +23,7 @@ spec:
           ports:
             - name: http
               containerPort: 8080
-          # اگر برنامه‌ات بدون وابستگی‌ها (DB/Rabbit/Memcached) هم بالا می‌آید، همین کافیست.
-          # در غیر اینصورت متغیرهای محیطی را باز کن و مقادیر مناسب بده.
-          # env:
-          #   - name: DB_HOST
-          #     value: mysql
-          #   - name: DB_USER
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: mysql-secret
-          #         key: username
-          #   - name: DB_PASSWORD
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: mysql-secret
-          #         key: password
+
           readinessProbe:
             httpGet:
               path: /
@@ -60,10 +46,7 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-      # اگر نودها دسترسی IAM/ECR دارند، نیاز به imagePullSecrets نیست.
-      # در غیر اینصورت یک secret از نوع docker-registry بساز و اینجا اضافه کن:
-      # imagePullSecrets:
-      #   - name: ecr-pull-secret
+
 ---
 apiVersion: v1
 kind: Service
