@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: vprofileapp
-          image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:__TAG__
+          image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:latest
           imagePullPolicy: Always
           ports:
             - name: http
