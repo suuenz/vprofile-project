@@ -9,25 +9,53 @@ spec:
   selector:
     matchLabels:
       app: vprofileapp
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: vprofileapp
     spec:
       containers:
-      - name: vprofileapp
-        image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:latest
-        ports:
-        - containerPort: 8080
+        - name: vprofileapp
+          image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:__TAG__
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: vprofileapp-service
+  name: vprofileapp-svc
+  labels:
+    app: vprofileapp
 spec:
   type: LoadBalancer
   selector:
     app: vprofileapp
   ports:
-  - port: 80
-    targetPort: 8080
+    - name: http
+      port: 80
+      targetPort: http
