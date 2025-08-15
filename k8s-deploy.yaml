@@ -1,64 +1,64 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1                       # نسخه API که برای Deployment استفاده می‌شود (apps/v1 برای Kubernetes جدید)
+kind: Deployment                          # نوع آبجکت: یک Deployment برای مدیریت پادها
 metadata:
-  name: vprofileapp
+  name: vprofileapp                       # نام Deployment
   labels:
-    app: vprofileapp
+    app: vprofileapp                       # لیبل برای شناسایی و گروه‌بندی
 spec:
-  replicas: 2
-  revisionHistoryLimit: 3
-  progressDeadlineSeconds: 600
-  selector:
+  replicas: 2                              # تعداد پادهایی که باید همیشه اجرا شوند
+  revisionHistoryLimit: 3                  # حداکثر تعداد نسخه‌های قدیمی که نگه داشته می‌شوند
+  progressDeadlineSeconds: 600             # حداکثر زمان انتظار برای کامل شدن rollout (بر حسب ثانیه)
+  selector:                                # سلکتور برای پیدا کردن پادهای متعلق به این Deployment
     matchLabels:
-      app: vprofileapp
-  template:
+      app: vprofileapp                     # باید با لیبل پادها در template مطابقت داشته باشد
+  template:                                # قالب (template) برای ایجاد پادها
     metadata:
       labels:
-        app: vprofileapp
+        app: vprofileapp                   # لیبل‌هایی که روی پادها اعمال می‌شوند
     spec:
-      containers:
-        - name: vprofileapp
-          image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:latest
-          imagePullPolicy: Always
+      containers:                          # لیست کانتینرهایی که در هر پاد اجرا می‌شوند
+        - name: vprofileapp                # نام کانتینر
+          image: 084317777937.dkr.ecr.eu-north-1.amazonaws.com/vprofileapp:latest  # ایمیج کانتینر از ECR
+          imagePullPolicy: Always          # همیشه ایمیج را قبل از اجرا pull کند
           ports:
-            - name: http
-              containerPort: 8080
+            - name: http                   # نام پورت (اختیاری، برای رفرنس در پروب یا سرویس)
+              containerPort: 8080          # پورتی که برنامه داخل کانتینر گوش می‌دهد
 
-          readinessProbe:
+          readinessProbe:                  # پروب بررسی آماده‌بودن سرویس
             httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 15
-            periodSeconds: 5
-            timeoutSeconds: 2
-            failureThreshold: 6
-          livenessProbe:
+              path: /                      # مسیر HTTP برای بررسی
+              port: 8080                   # پورت بررسی
+            initialDelaySeconds: 15        # تأخیر قبل از شروع اولین بررسی (ثانیه)
+            periodSeconds: 5               # فاصله بین هر بررسی (ثانیه)
+            timeoutSeconds: 2              # حداکثر زمان انتظار برای پاسخ (ثانیه)
+            failureThreshold: 6            # تعداد دفعات شکست قبل از غیر آماده‌ دانستن پاد
+          livenessProbe:                   # پروب بررسی زنده بودن سرویس
             httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 2
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+              path: /                      # مسیر HTTP برای بررسی
+              port: 8080                   # پورت بررسی
+            initialDelaySeconds: 30        # تأخیر قبل از شروع اولین بررسی (ثانیه)
+            periodSeconds: 10              # فاصله بین هر بررسی (ثانیه)
+            timeoutSeconds: 2              # حداکثر زمان انتظار برای پاسخ (ثانیه)
+          resources:                       # محدودیت‌ها و درخواست‌های منابع
+            requests:                       # منابعی که پاد حداقل نیاز دارد
+              cpu: "100m"                   # 0.1 هسته CPU
+              memory: "128Mi"               # 128 مگابایت RAM
+            limits:                         # حداکثر منابع مجاز برای پاد
+              cpu: "500m"                   # 0.5 هسته CPU
+              memory: "512Mi"               # 512 مگابایت RAM
 
 ---
-apiVersion: v1
-kind: Service
+apiVersion: v1                             # نسخه API برای Service
+kind: Service                              # نوع آبجکت: Service برای دسترسی به پادها
 metadata:
-  name: vprofileapp
+  name: vprofileapp                        # نام Service
   labels:
-    app: vprofileapp
+    app: vprofileapp                        # لیبل Service
 spec:
-  type: LoadBalancer
+  type: LoadBalancer                       # نوع سرویس: LoadBalancer (ایجاد IP عمومی یا ELB در Cloud)
   selector:
-    app: vprofileapp
+    app: vprofileapp                        # پادهایی که این سرویس باید به آنها وصل شود (براساس لیبل)
   ports:
-    - name: http
-      port: 80
-      targetPort: 8080
+    - name: http                            # نام پورت سرویس
+      port: 80                              # پورتی که سرویس در آن گوش می‌دهد (خارجی)
+      targetPort: 8080                      # پورتی در پاد که ترافیک به آن ارسال می‌شود
