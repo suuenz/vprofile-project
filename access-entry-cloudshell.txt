@@ -1,0 +1,15 @@
+REGION=eu-north-1
+CLUSTER=my-eks-cluster
+
+
+PIPELINE_ROLE_ARN="جایگذاری شود"
+CODEBUILD_ROLE_ARN="جایگذاری شود"
+aws eks create-access-entry --cluster-name "$CLUSTER" --principal-arn "$PIPELINE_ROLE_ARN" --type STANDARD --region "$REGION" || true
+aws eks create-access-entry --cluster-name "$CLUSTER" --principal-arn "$CODEBUILD_ROLE_ARN" --type STANDARD --region "$REGION" || true
+
+ADMIN_POLICY_ARN="arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+aws eks associate-access-policy --cluster-name "$CLUSTER" --principal-arn "$PIPELINE_ROLE_ARN" --policy-arn "$ADMIN_POLICY_ARN" --access-scope type=cluster --region "$REGION"
+
+aws eks associate-access-policy --cluster-name "$CLUSTER" --principal-arn "$CODEBUILD_ROLE_ARN" --policy-arn "$ADMIN_POLICY_ARN" --access-scope type=cluster --region "$REGION"
+aws eks list-access-entries --cluster-name "$CLUSTER" --region "$REGION" \
+  --query "accessEntries[?principalArn=='$PIPELINE_ROLE_ARN' || principalArn=='$CODEBUILD_ROLE_ARN'].[principalArn,accessEntryArn]"
